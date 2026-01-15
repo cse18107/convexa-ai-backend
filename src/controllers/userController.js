@@ -1,4 +1,4 @@
-const { User } = require('../models');
+const supabase = require('../config/supabase');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -6,17 +6,29 @@ exports.register = async (req, res) => {
   try {
     const { full_name, email, password } = req.body;
 
-    const existingUser = await User.findOne({ where: { email } });
+    // Check if user exists
+    const { data: existingUser, error: fetchError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .single();
+
     if (existingUser) {
       return res.status(400).json({ error: 'Email already exists' });
     }
 
     const password_hash = await bcrypt.hash(password, 10);
-    const user = await User.create({
-      full_name,
-      email,
-      password_hash,
-    });
+    
+    // Create user
+    const { data: user, error: insertError } = await supabase
+      .from('users')
+      .insert([
+        { full_name, email, password_hash }
+      ])
+      .select()
+      .single();
+
+    if (insertError) throw insertError;
 
     res.status(201).json({ message: 'User registered successfully', userId: user.id });
   } catch (error) {
@@ -28,7 +40,12 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ where: { email } });
+    const { data: user, error: fetchError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .single();
+
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
