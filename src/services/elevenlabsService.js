@@ -15,9 +15,9 @@ const createBatchCall = async (campaignData, recipients) => {
   try {
     const response = await client.conversationalAi.batchCalls.create({
       callName: campaignData.title,
-      agentId: "agent_1601kdw1tj7ge0zbre6k9pjyr11s",
+      agentId: process.env.ELEVENLABS_AGENT_ID || "agent_1601kdw1tj7ge0zbre6k9pjyr11s",
       scheduledTimeUnix: campaignData.scheduledTimeUnix,
-      agentPhoneNumberId: "phnum_3701kdw278hee73bx6e3cj49qhxb", // Using the ID from your example or from request
+      agentPhoneNumberId: process.env.ELEVENLABS_PHONE_ID || "phnum_3701kdw278hee73bx6e3cj49qhxb", // Using the ID from your example or from request
       recipients: recipients.map(rec => ({
         id: rec.id, // This matches the recipient ID we store in Excel
         phoneNumber: rec.phoneNumber,
