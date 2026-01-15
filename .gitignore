@@ -27,5 +27,3 @@ uploads/
 *.swp
 *.swo
 
-# Render
-render.yaml
