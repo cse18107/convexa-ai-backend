@@ -24,7 +24,8 @@ exports.createCampaign = async (req, res) => {
 
     let scheduledTimeUnix = null;
     if (scheduled_date && scheduled_time) {
-      const dateTimeStr = `${scheduled_date}T${scheduled_time}:00`;
+      // Append +05:30 to force IST interpretation
+      const dateTimeStr = `${scheduled_date}T${scheduled_time}:00+05:30`;
       const dateObj = new Date(dateTimeStr);
       if (!isNaN(dateObj.getTime())) {
         scheduledTimeUnix = Math.floor(dateObj.getTime() / 1000);
